@@ -9,14 +9,15 @@ pipeline {
     environment {
         IMAGE_NAME = "srinu/demo-app"
         IMAGE_TAG = "${BUILD_NUMBER}"
-        SONAR_HOST = "http://<SONAR_IP>:9000"
+        // SONAR_HOST = "http://<SONAR_IP>:9000"
     }
 
     stages {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/yourname/java-maven-app.git'
+                git branch: 'main',
+                    url: 'https://github.com/yourname/java-maven-app.git'
             }
         }
 
@@ -26,6 +27,7 @@ pipeline {
             }
         }
 
+        /*
         stage('SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
@@ -38,6 +40,7 @@ pipeline {
                 }
             }
         }
+        */
 
         stage('Docker Build') {
             steps {
@@ -60,6 +63,7 @@ pipeline {
             }
         }
 
+        /*
         stage('Update K8s Manifests') {
             steps {
                 withCredentials([string(credentialsId: 'github-token', variable: 'GIT_TOKEN')]) {
@@ -74,5 +78,6 @@ pipeline {
                 }
             }
         }
+        */
     }
 }
