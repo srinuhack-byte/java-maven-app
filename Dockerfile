@@ -1,10 +1,10 @@
-# Use an official OpenJDK 11 image
-FROM openjdk:11-jre-slim-bullseye
+# Use a valid JDK image
+FROM openjdk:11-jre-slim
 
 WORKDIR /app
 
-# Copy the built jar from Maven build
+# Copy the JAR built by Maven
 COPY target/demo-app-1.0.jar app.jar
 
-# Command to run the app
-ENTRYPOINT ["java","-jar","app.jar"]
+# Run the app
+ENTRYPOINT ["java", "-jar", "app.jar"]
