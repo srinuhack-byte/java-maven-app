@@ -7,7 +7,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
@@ -18,49 +17,25 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                script {
-                    // Use Maven Docker container to build the project
-                    docker.image('maven:3.9.6-eclipse-temurin-11').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
-                        sh 'mvn clean package'
-                    }
-                }
+                // Run Maven inside a container
+                sh "docker run --rm -v $PWD:/app -w /app eclipse-temurin:11-jre mvn clean package"
             }
         }
 
-        stage('Docker Build') {
+        stage('Docker Build & Push') {
             steps {
                 sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
-            }
-        }
-
-        stage('Docker Push') {
-            steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-creds',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    docker push ${IMAGE_NAME}:${IMAGE_TAG}
                     '''
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            echo 'Cleaning up leftover Docker containers/images...'
-            sh 'docker system prune -f'
-        }
-
-        success {
-            echo "Pipeline completed successfully! Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}"
-        }
-
-        failure {
-            echo "Pipeline failed. Check the logs above."
         }
     }
 }
