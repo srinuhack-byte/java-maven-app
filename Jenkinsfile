@@ -17,7 +17,9 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/yourname/java-maven-app.git'
+                    url: 'https://github.com/srinuhack-byte/java-maven-app.git',
+                    credentialsId: 'githubsecond-token'
+                    
             }
         }
 
